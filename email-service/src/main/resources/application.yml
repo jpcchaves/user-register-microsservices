@@ -1,0 +1,14 @@
+server:
+  port: 8090
+
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKER:localhost:9092}
+    topic:
+      orchestrator: orchestrator
+      email-success: email-success
+      email-fail: email-fail
+    consumer:
+      group-id: email-service-group
+      auto-offset-reset: latest
+
