@@ -1,0 +1,97 @@
+services:
+  kafka:
+    container_name: kafka
+    image: obsidiandynamics/kafka
+    restart: "no"
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - "2181:2181"
+      - "9092:9092"
+    networks:
+      - orchestrator-saga
+    environment:
+      KAFKA_LISTENERS: "INTERNAL://:29092,EXTERNAL://:9092"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:29092,EXTERNAL://localhost:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      KAFKA_ZOOKEEPER_SESSION_TIMEOUT: "6000"
+      KAFKA_RESTART_ATTEMPTS: "10"
+      KAFKA_RESTART_DELAY: "5"
+      ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
+    volumes:
+      - ./data/kafka/data:/var/lib/kafka/data
+
+  redpanda-console:
+    container_name: redpanda
+    image: docker.redpanda.com/vectorized/console:latest
+    restart: on-failure
+    entrypoint: /bin/sh
+    command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
+    ports:
+      - "8081:8080"
+    networks:
+      - orchestrator-saga
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["kafka:29092"]
+    depends_on:
+      - kafka
+
+  auth-db:
+    image: postgres:15
+    container_name: auth-db
+    networks:
+      - orchestrator-saga
+    environment:
+      - POSTGRES_DB=auth_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5433:5432"
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    depends_on:
+      - kafka
+      - auth-db
+    environment:
+      - KAFKA_BROKER=kafka:29092
+    ports:
+      - "8080:8080"
+    networks:
+      - orchestrator-saga
+
+  orchestrator:
+    build: ./orchestrator
+    container_name: orchestrator
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_BROKER=kafka:29092
+    ports:
+      - "8000:8000"
+    networks:
+      - orchestrator-saga
+
+  email-service:
+    build: ./email-service
+    container_name: email-service
+    depends_on:
+      - kafka
+      - auth-db
+    environment:
+      - KAFKA_BROKER=kafka:29092
+    ports:
+      - "8090:8090"
+    networks:
+      - orchestrator-saga
+
+networks:
+  orchestrator-saga:
+    driver: bridge
