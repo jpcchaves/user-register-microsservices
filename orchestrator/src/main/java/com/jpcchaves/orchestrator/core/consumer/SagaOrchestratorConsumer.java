@@ -38,4 +38,13 @@ public class SagaOrchestratorConsumer {
 
         orchestratorService.sendRegistrationEmail(event);
     }
+
+    @KafkaListener(
+            groupId = "${spring.kafka.consumer.group-id}",
+            topics = {"${spring.kafka.topic.registration-completed}"})
+    public void consumeRegistrationCompletedTopic(String payload) {
+        logger.info("Receiving event {} from registration completed topic", payload);
+        EventDTO<?> event = jsonUtil.toEvent(payload);
+        orchestratorService.finishRegistrationSaga(event);
+    }
 }
