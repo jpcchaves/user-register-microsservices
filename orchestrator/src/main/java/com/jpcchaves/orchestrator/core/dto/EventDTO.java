@@ -11,7 +11,7 @@ import java.util.List;
 
 public class EventDTO<T> {
 
-    private String id;
+    private Long id;
     private String transactionId;
     private T payload;
     private EEventSource source;
@@ -23,7 +23,7 @@ public class EventDTO<T> {
     public EventDTO() {}
 
     public EventDTO(
-            String id,
+            Long id,
             String transactionId,
             T payload,
             EEventSource source,
@@ -56,11 +56,11 @@ public class EventDTO<T> {
         return new Builder<>();
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -127,7 +127,7 @@ public class EventDTO<T> {
     }
 
     public static class Builder<T> {
-        private String id;
+        private Long id;
         private String transactionId;
         private T payload;
         private EEventSource source;
@@ -136,7 +136,7 @@ public class EventDTO<T> {
         private LocalDateTime createdAt;
         private LocalDateTime finishedAt;
 
-        public Builder<T> id(String id) {
+        public Builder<T> id(Long id) {
             this.id = id;
             return this;
         }

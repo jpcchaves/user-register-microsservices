@@ -1,35 +1,57 @@
-package com.jpcchaves.emailservice.core.dto;
+package com.jpcchaves.authservice.core.model;
 
-import com.jpcchaves.emailservice.core.enums.ESagaStatus;
-
-import org.springframework.util.ObjectUtils;
+import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
-public class EventDTO<T> {
+@Entity
+@Table(name = "events")
+public class Event {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, updatable = false)
     private String transactionId;
-    private T payload;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String payload;
+
     private String source;
-    private ESagaStatus status;
-    private List<HistoryDTO> eventHistory;
+
+    private String status;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "event_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "event_fk", value = ConstraintMode.CONSTRAINT))
+    private List<History> eventHistory;
+
     private LocalDateTime createdAt;
-    private LocalDateTime finishedAt;
 
-    public EventDTO() {}
+    public Event() {}
 
-    public EventDTO(
+    public Event(
             Long id,
             String transactionId,
-            T payload,
+            String payload,
             String source,
-            ESagaStatus status,
-            List<HistoryDTO> eventHistory,
-            LocalDateTime createdAt,
-            LocalDateTime finishedAt) {
+            String status,
+            List<History> eventHistory,
+            LocalDateTime createdAt) {
         this.id = id;
         this.transactionId = transactionId;
         this.payload = payload;
@@ -37,10 +59,9 @@ public class EventDTO<T> {
         this.status = status;
         this.eventHistory = eventHistory;
         this.createdAt = createdAt;
-        this.finishedAt = finishedAt;
     }
 
-    public EventDTO(Builder<T> builder) {
+    public Event(Builder builder) {
         this.id = builder.id;
         this.transactionId = builder.transactionId;
         this.payload = builder.payload;
@@ -48,11 +69,10 @@ public class EventDTO<T> {
         this.status = builder.status;
         this.eventHistory = builder.eventHistory;
         this.createdAt = builder.createdAt;
-        this.finishedAt = builder.finishedAt;
     }
 
-    public static <T> Builder<T> builder() {
-        return new Builder<>();
+    public static Builder builder() {
+        return new Builder();
     }
 
     public Long getId() {
@@ -71,11 +91,11 @@ public class EventDTO<T> {
         this.transactionId = transactionId;
     }
 
-    public T getPayload() {
+    public String getPayload() {
         return payload;
     }
 
-    public void setPayload(T payload) {
+    public void setPayload(String payload) {
         this.payload = payload;
     }
 
@@ -87,19 +107,19 @@ public class EventDTO<T> {
         this.source = source;
     }
 
-    public ESagaStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(ESagaStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public List<HistoryDTO> getEventHistory() {
+    public List<History> getEventHistory() {
         return eventHistory;
     }
 
-    public void setEventHistory(List<HistoryDTO> eventHistory) {
+    public void setEventHistory(List<History> eventHistory) {
         this.eventHistory = eventHistory;
     }
 
@@ -111,72 +131,52 @@ public class EventDTO<T> {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getFinishedAt() {
-        return finishedAt;
-    }
-
-    public void setFinishedAt(LocalDateTime finishedAt) {
-        this.finishedAt = finishedAt;
-    }
-
-    public void addToHistory(HistoryDTO history) {
-        if (ObjectUtils.isEmpty(eventHistory)) {
-            eventHistory = new ArrayList<>();
-        }
-    }
-
-    public static class Builder<T> {
+    public static class Builder {
         private Long id;
         private String transactionId;
-        private T payload;
+        private String payload;
         private String source;
-        private ESagaStatus status;
-        private List<HistoryDTO> eventHistory;
+        private String status;
+        private List<History> eventHistory;
         private LocalDateTime createdAt;
-        private LocalDateTime finishedAt;
 
-        public Builder<T> id(Long id) {
+        public Builder id(Long id) {
             this.id = id;
             return this;
         }
 
-        public Builder<T> transactionId(String transactionId) {
+        public Builder transactionId(String transactionId) {
             this.transactionId = transactionId;
             return this;
         }
 
-        public Builder<T> payload(T payload) {
+        public Builder payload(String payload) {
             this.payload = payload;
             return this;
         }
 
-        public Builder<T> source(String source) {
+        public Builder source(String source) {
             this.source = source;
             return this;
         }
 
-        public Builder<T> status(ESagaStatus status) {
+        public Builder status(String status) {
             this.status = status;
             return this;
         }
 
-        public Builder<T> eventHistory(List<HistoryDTO> eventHistory) {
+        public Builder eventHistory(List<History> eventHistory) {
             this.eventHistory = eventHistory;
             return this;
         }
 
-        public Builder<T> createdAt(LocalDateTime createdAt) {
+        public Builder createdAt(LocalDateTime createdAt) {
             this.createdAt = createdAt;
             return this;
         }
 
-        public Builder<T> finishedAt(LocalDateTime finishedAt) {
-            this.finishedAt = finishedAt;
-            return this;
-        }
-
-        public EventDTO<T> build() {
-            return new EventDTO<>(this);
+        public Event build() {
+            return new Event(this);
         }
     }
 }
