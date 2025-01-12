@@ -54,6 +54,18 @@ services:
     ports:
       - "5433:5432"
 
+  email-db:
+    image: postgres:15
+    container_name: email-db
+    networks:
+      - orchestrator-saga
+    environment:
+      - POSTGRES_DB=email_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5434:5432"
+
   auth-service:
     build: ./auth-service
     container_name: auth-service
