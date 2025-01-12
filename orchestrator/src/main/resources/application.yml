@@ -5,6 +5,8 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BROKER:localhost:9092}
     topic:
+      registration-initiated: registration-initiated
+      registration-completed: registration-completed
       email-send: email-send
       orchestrator: orchestrator
     consumer:
