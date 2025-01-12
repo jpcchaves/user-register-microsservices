@@ -1,0 +1,67 @@
+package com.jpcchaves.orchestrator.core.service;
+
+import com.jpcchaves.orchestrator.core.dto.EventDTO;
+import com.jpcchaves.orchestrator.core.dto.HistoryDTO;
+import com.jpcchaves.orchestrator.core.enums.EEventSource;
+import com.jpcchaves.orchestrator.core.enums.ESagaStatus;
+import com.jpcchaves.orchestrator.core.enums.ETopics;
+import com.jpcchaves.orchestrator.core.producer.SagaOrchestratorProducer;
+import com.jpcchaves.orchestrator.core.saga.SagaExecutionController;
+import com.jpcchaves.orchestrator.core.util.JsonUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+
+@Service
+public class OrchestratorService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrchestratorService.class);
+
+    private final SagaOrchestratorProducer sagaOrchestratorProducer;
+    private final SagaExecutionController sagaExecutionController;
+    private final JsonUtil jsonUtil;
+
+    public OrchestratorService(
+            SagaExecutionController sagaExecutionController,
+            JsonUtil jsonUtil,
+            SagaOrchestratorProducer sagaOrchestratorProducer) {
+        this.sagaExecutionController = sagaExecutionController;
+        this.jsonUtil = jsonUtil;
+        this.sagaOrchestratorProducer = sagaOrchestratorProducer;
+    }
+
+    public void sendRegistrationEmail(EventDTO<?> event) {
+        event.setSource(EEventSource.ORCHESTRATOR);
+        event.setStatus(ESagaStatus.SUCCESS);
+
+        // it will get email-success topic and send the event to email-service
+        ETopics topic = getTopic(event);
+
+        logger.info("STARTED REGISTRATION EMAIL SAGA!");
+        addHistory(event, "Started registration email saga!");
+        produceEvent(event, topic);
+    }
+
+    private ETopics getTopic(EventDTO<?> event) {
+        return sagaExecutionController.getNextTopic(event);
+    }
+
+    private void addHistory(EventDTO<?> event, String message) {
+        HistoryDTO history =
+                HistoryDTO.builder()
+                        .source(event.getSource())
+                        .status(event.getStatus())
+                        .message(message)
+                        .createdAt(LocalDateTime.now())
+                        .build();
+
+        event.addToHistory(history);
+    }
+
+    private void produceEvent(EventDTO<?> event, ETopics topic) {
+        sagaOrchestratorProducer.sendEvent(jsonUtil.toJson(event), topic.getTopic());
+    }
+}
