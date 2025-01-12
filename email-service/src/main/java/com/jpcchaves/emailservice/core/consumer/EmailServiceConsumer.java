@@ -29,4 +29,10 @@ public class EmailServiceConsumer {
         EventDTO<?> event = jsonUtil.toEvent(payload);
         emailService.sendEmail(event);
     }
+
+    public void consumeEmailFailureTopic(String payload) {
+        log.info("Receiving event {} from email-failure topic", payload);
+        EventDTO<?> event = jsonUtil.toEvent(payload);
+        emailService.invalidateEmailRequest(event);
+    }
 }
