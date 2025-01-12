@@ -1,6 +1,5 @@
 package com.jpcchaves.emailservice.core.dto;
 
-import com.jpcchaves.emailservice.core.enums.EEventSource;
 import com.jpcchaves.emailservice.core.enums.ESagaStatus;
 
 import org.springframework.util.ObjectUtils;
@@ -14,7 +13,7 @@ public class EventDTO<T> {
     private String id;
     private String transactionId;
     private T payload;
-    private EEventSource source;
+    private String source;
     private ESagaStatus status;
     private List<HistoryDTO> eventHistory;
     private LocalDateTime createdAt;
@@ -26,7 +25,7 @@ public class EventDTO<T> {
             String id,
             String transactionId,
             T payload,
-            EEventSource source,
+            String source,
             ESagaStatus status,
             List<HistoryDTO> eventHistory,
             LocalDateTime createdAt,
@@ -80,11 +79,11 @@ public class EventDTO<T> {
         this.payload = payload;
     }
 
-    public EEventSource getSource() {
+    public String getSource() {
         return source;
     }
 
-    public void setSource(EEventSource source) {
+    public void setSource(String source) {
         this.source = source;
     }
 
@@ -130,7 +129,7 @@ public class EventDTO<T> {
         private String id;
         private String transactionId;
         private T payload;
-        private EEventSource source;
+        private String source;
         private ESagaStatus status;
         private List<HistoryDTO> eventHistory;
         private LocalDateTime createdAt;
@@ -151,7 +150,7 @@ public class EventDTO<T> {
             return this;
         }
 
-        public Builder<T> source(EEventSource source) {
+        public Builder<T> source(String source) {
             this.source = source;
             return this;
         }

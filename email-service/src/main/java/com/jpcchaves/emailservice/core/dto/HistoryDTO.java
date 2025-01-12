@@ -1,21 +1,17 @@
 package com.jpcchaves.emailservice.core.dto;
 
-
-import com.jpcchaves.emailservice.core.enums.EEventSource;
 import com.jpcchaves.emailservice.core.enums.ESagaStatus;
-
 import java.time.LocalDateTime;
 
 public class HistoryDTO {
-    private EEventSource source;
+    private String source;
     private ESagaStatus status;
     private String message;
     private LocalDateTime createdAt;
 
     public HistoryDTO() {}
 
-    public HistoryDTO(
-            EEventSource source, ESagaStatus status, String message, LocalDateTime createdAt) {
+    public HistoryDTO(String source, ESagaStatus status, String message, LocalDateTime createdAt) {
         this.source = source;
         this.status = status;
         this.message = message;
@@ -33,11 +29,11 @@ public class HistoryDTO {
         return new Builder();
     }
 
-    public EEventSource getSource() {
+    public String getSource() {
         return source;
     }
 
-    public void setSource(EEventSource source) {
+    public void setSource(String source) {
         this.source = source;
     }
 
@@ -66,14 +62,14 @@ public class HistoryDTO {
     }
 
     public static class Builder {
-        private EEventSource source;
+        private String source;
         private ESagaStatus status;
         private String message;
         private LocalDateTime createdAt;
 
         public Builder() {}
 
-        public Builder source(EEventSource source) {
+        public Builder source(String source) {
             this.source = source;
             return this;
         }
