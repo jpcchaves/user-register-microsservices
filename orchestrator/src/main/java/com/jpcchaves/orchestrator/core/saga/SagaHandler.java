@@ -1,11 +1,10 @@
 package com.jpcchaves.orchestrator.core.saga;
 
-import static com.jpcchaves.orchestrator.core.enums.EEventSource.EMAIL_SERVICE;
-import static com.jpcchaves.orchestrator.core.enums.ESagaStatus.FAIL;
-import static com.jpcchaves.orchestrator.core.enums.ESagaStatus.SUCCESS;
-import static com.jpcchaves.orchestrator.core.enums.ETopics.EMAIL_SUCCESS;
-import static com.jpcchaves.orchestrator.core.enums.ETopics.ORCHESTRATOR;
-import static com.jpcchaves.orchestrator.core.enums.ETopics.REGISTRATION_COMPLETED;
+import static com.jpcchaves.orchestrator.core.enums.ETopics.*;
+
+import com.jpcchaves.orchestrator.core.enums.EEventSource;
+import com.jpcchaves.orchestrator.core.enums.ESagaStatus;
+import com.jpcchaves.orchestrator.core.enums.ETopics;
 
 public class SagaHandler {
 
@@ -13,14 +12,14 @@ public class SagaHandler {
         // When user registers in auth-service,
         // the source is set to ORCHESTRATOR and the status is set to SUCCESS
         // it will make the next topic be the email-success by the SEC
-        {ORCHESTRATOR, SUCCESS, EMAIL_SUCCESS},
+        {EEventSource.ORCHESTRATOR, ESagaStatus.SUCCESS, ETopics.EMAIL_SUCCESS},
 
         // in the email-service, the source will be set to EMAIL_SERVICE
         /// and if there is an error, the status will be FAIL
         // if there's no error, the status will be SUCCESS and it will return to
         // registration-completed topic
-        {EMAIL_SERVICE, FAIL, REGISTRATION_COMPLETED},
-        {EMAIL_SERVICE, SUCCESS, REGISTRATION_COMPLETED},
+        {EEventSource.EMAIL_SERVICE, ESagaStatus.FAIL, ETopics.REGISTRATION_COMPLETED},
+        {EEventSource.EMAIL_SERVICE, ESagaStatus.SUCCESS, ETopics.REGISTRATION_COMPLETED},
     };
 
     public static final int EVENT_SOURCE_INDEX = 0;

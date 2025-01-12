@@ -1,5 +1,7 @@
 package com.jpcchaves.orchestrator.core.saga;
 
+import static com.jpcchaves.orchestrator.core.enums.ESagaStatus.FAIL;
+import static com.jpcchaves.orchestrator.core.enums.ESagaStatus.SUCCESS;
 import static com.jpcchaves.orchestrator.core.saga.SagaHandler.EVENT_SOURCE_INDEX;
 import static com.jpcchaves.orchestrator.core.saga.SagaHandler.SAGA_HANDLER;
 import static com.jpcchaves.orchestrator.core.saga.SagaHandler.SAGA_STATUS_INDEX;
@@ -68,6 +70,6 @@ public class SagaExecutionController {
     }
 
     private String createSagaId(EventDTO<?> event) {
-        return String.format(SAGA_LOG_ID, event.getId(), event.getTransactionId());
+        return String.format(SAGA_LOG_ID, event.getTransactionId(), event.getId());
     }
 }

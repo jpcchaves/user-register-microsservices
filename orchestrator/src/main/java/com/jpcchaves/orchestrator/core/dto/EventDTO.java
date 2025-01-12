@@ -8,6 +8,7 @@ import org.springframework.util.ObjectUtils;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class EventDTO<T> {
 
@@ -124,6 +125,20 @@ public class EventDTO<T> {
         if (ObjectUtils.isEmpty(eventHistory)) {
             eventHistory = new ArrayList<>();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        EventDTO<?> eventDTO = (EventDTO<?>) o;
+        return Objects.equals(transactionId, eventDTO.transactionId)
+                && source == eventDTO.source
+                && status == eventDTO.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(transactionId, source, status);
     }
 
     public static class Builder<T> {
