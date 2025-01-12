@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Registered
 public interface EmailRequestsRepository extends JpaRepository<EmailRequests, Long> {
-    Boolean existsByIdAndTransactionId(Long id, String transactionId);
+    Boolean existsByTransactionId(String transactionId);
 
-    Optional<EmailRequests> findByIdAndTransactionId(Long id, String transactionId);
+    Optional<EmailRequests> findByTransactionId(String transactionId);
 }
