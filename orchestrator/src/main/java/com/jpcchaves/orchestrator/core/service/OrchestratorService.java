@@ -62,7 +62,7 @@ public class OrchestratorService {
     }
 
     private void produceEvent(EventDTO<?> event, ETopics topic) {
-        sagaOrchestratorProducer.sendEvent(jsonUtil.toJson(event), topic.getTopic());
+        sagaOrchestratorProducer.sendEvent(topic.getTopic(), jsonUtil.toJson(event));
     }
 
     public void finishRegistrationSaga(EventDTO<?> event) {

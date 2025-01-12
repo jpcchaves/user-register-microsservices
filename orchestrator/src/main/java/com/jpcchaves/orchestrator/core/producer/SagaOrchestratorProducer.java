@@ -17,7 +17,6 @@ public class SagaOrchestratorProducer {
 
     public void sendEvent(String topic, String payload) {
         try {
-
             logger.info("Sending event to topic {} with data {}", topic, payload);
             kafkaTemplate.send(topic, payload);
         } catch (Exception e) {
