@@ -5,6 +5,8 @@ import com.jpcchaves.authservice.core.producer.SagaProducer;
 import com.jpcchaves.authservice.core.util.JsonUtil;
 import com.jpcchaves.authservice.core.util.TransactionHelper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 @Service
 public class AuthService {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
     private final JsonUtil jsonUtil;
     private final SagaProducer sagaProducer;
     private final TransactionHelper transactionHelper;
@@ -24,7 +27,7 @@ public class AuthService {
     }
 
     public void register() {
-
+        log.info("Registering user");
         sagaProducer.sendEvent(jsonUtil.toJson(createPayload()));
     }
 

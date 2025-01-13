@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SagaOrchestratorConsumer {
-    private static final Logger logger = LoggerFactory.getLogger(SagaOrchestratorConsumer.class);
+    private static final Logger log = LoggerFactory.getLogger(SagaOrchestratorConsumer.class);
 
     private final JsonUtil jsonUtil;
     private final OrchestratorService orchestratorService;
@@ -32,7 +32,7 @@ public class SagaOrchestratorConsumer {
             topics = {"${spring.kafka.topic.registration-initiated}"})
     public void consumeRegistrationInitiatedTopic(String payload) {
 
-        logger.info("Receiving event {} from registration initiated topic", payload);
+        log.info("Receiving event {} from registration initiated topic", payload);
 
         EventDTO<?> event = jsonUtil.toEvent(payload);
 
@@ -43,8 +43,20 @@ public class SagaOrchestratorConsumer {
             groupId = "${spring.kafka.consumer.group-id}",
             topics = {"${spring.kafka.topic.registration-completed}"})
     public void consumeRegistrationCompletedTopic(String payload) {
-        logger.info("Receiving event {} from registration completed topic", payload);
+        log.info("Receiving event {} from registration completed topic", payload);
         EventDTO<?> event = jsonUtil.toEvent(payload);
         orchestratorService.finishRegistrationSaga(event);
+    }
+
+    @KafkaListener(
+            groupId = "${spring.kafka.consumer.group-id}",
+            topics = {"${spring.kafka.topic.orchestrator}"})
+    public void consumeOrchestratorEvent(String payload) {
+
+        log.info("Receiving event {} from orchestrator topic", payload);
+
+        EventDTO<?> event = jsonUtil.toEvent(payload);
+        // TODO: implement continue saga method
+        // orchestratorService.continueSaga(event);
     }
 }
