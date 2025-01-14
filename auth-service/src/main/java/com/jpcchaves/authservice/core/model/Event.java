@@ -1,5 +1,6 @@
 package com.jpcchaves.authservice.core.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -12,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
@@ -36,14 +38,18 @@ public class Event {
 
     private String status;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(
             name = "event_id",
             nullable = false,
             foreignKey = @ForeignKey(name = "event_fk", value = ConstraintMode.CONSTRAINT))
     private List<History> eventHistory;
 
+    @CreationTimestamp
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    private LocalDateTime finishedAt;
 
     public Event() {}
 
@@ -54,7 +60,8 @@ public class Event {
             String source,
             String status,
             List<History> eventHistory,
-            LocalDateTime createdAt) {
+            LocalDateTime createdAt,
+            LocalDateTime finishedAt) {
         this.id = id;
         this.transactionId = transactionId;
         this.payload = payload;
@@ -62,6 +69,7 @@ public class Event {
         this.status = status;
         this.eventHistory = eventHistory;
         this.createdAt = createdAt;
+        this.finishedAt = finishedAt;
     }
 
     public Event(Builder builder) {
@@ -72,6 +80,7 @@ public class Event {
         this.status = builder.status;
         this.eventHistory = builder.eventHistory;
         this.createdAt = builder.createdAt;
+        this.finishedAt = builder.finishedAt;
     }
 
     public static Builder builder() {
@@ -134,6 +143,14 @@ public class Event {
         this.createdAt = createdAt;
     }
 
+    public LocalDateTime getFinishedAt() {
+        return finishedAt;
+    }
+
+    public void setFinishedAt(LocalDateTime finishedAt) {
+        this.finishedAt = finishedAt;
+    }
+
     public void addToHistory(History history) {
         if (ObjectUtils.isEmpty(eventHistory)) {
             eventHistory = new ArrayList<>();
@@ -150,6 +167,7 @@ public class Event {
         private String status;
         private List<History> eventHistory;
         private LocalDateTime createdAt;
+        private LocalDateTime finishedAt;
 
         public Builder id(Long id) {
             this.id = id;
@@ -183,6 +201,11 @@ public class Event {
 
         public Builder createdAt(LocalDateTime createdAt) {
             this.createdAt = createdAt;
+            return this;
+        }
+
+        public Builder finishedAt(LocalDateTime finishedAt) {
+            this.finishedAt = finishedAt;
             return this;
         }
 

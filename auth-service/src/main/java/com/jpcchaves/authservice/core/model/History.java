@@ -6,6 +6,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "histories")
 public class History {
@@ -17,16 +19,27 @@ public class History {
     private String source;
     private String status;
     private String message;
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     public History() {}
 
-    public History(Long id, String source, String status, String message, String createdAt) {
+    public History(Long id, String source, String status, String message, LocalDateTime createdAt) {
         this.id = id;
         this.source = source;
         this.status = status;
         this.message = message;
         this.createdAt = createdAt;
+    }
+
+    public History(Builder builder) {
+        this.source = builder.source;
+        this.status = builder.status;
+        this.message = builder.message;
+        this.createdAt = builder.createdAt;
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public Long getId() {
@@ -61,11 +74,42 @@ public class History {
         this.message = message;
     }
 
-    public String getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public static class Builder {
+        private String source;
+        private String status;
+        private String message;
+        private LocalDateTime createdAt;
+
+        public Builder source(String source) {
+            this.source = source;
+            return this;
+        }
+
+        public Builder status(String status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder message(String message) {
+            this.message = message;
+            return this;
+        }
+
+        public Builder createdAt(LocalDateTime createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public History build() {
+            return new History(this);
+        }
     }
 }
