@@ -12,7 +12,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import org.springframework.util.ObjectUtils;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -129,6 +132,14 @@ public class Event {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public void addToHistory(History history) {
+        if (ObjectUtils.isEmpty(eventHistory)) {
+            eventHistory = new ArrayList<>();
+        }
+
+        eventHistory.add(history);
     }
 
     public static class Builder {

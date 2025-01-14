@@ -123,6 +123,8 @@ public class EventDTO<T> {
         if (ObjectUtils.isEmpty(eventHistory)) {
             eventHistory = new ArrayList<>();
         }
+
+        eventHistory.add(history);
     }
 
     public static class Builder<T> {

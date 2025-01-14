@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Service
 public class OrchestratorService {
 
-    private static final Logger logger = LoggerFactory.getLogger(OrchestratorService.class);
+    private static final Logger log = LoggerFactory.getLogger(OrchestratorService.class);
 
     private final SagaOrchestratorProducer sagaOrchestratorProducer;
     private final SagaExecutionController sagaExecutionController;
@@ -40,7 +40,7 @@ public class OrchestratorService {
         // it will get email-success topic and send the event to email-service
         ETopics topic = getTopic(event);
 
-        logger.info("STARTED REGISTRATION EMAIL SAGA!");
+        log.info("STARTED REGISTRATION EMAIL SAGA!");
         addHistory(event, "Started registration email saga!");
         produceEvent(event, topic);
     }
@@ -68,13 +68,22 @@ public class OrchestratorService {
     public void finishRegistrationSaga(EventDTO<?> event) {
         event.setSource(EEventSource.ORCHESTRATOR);
 
-        logger.info(
+        log.info(
                 "FINISHED REGISTRATION SAGA WITH STATUS {} FOR EVENT: {}!",
                 event.getStatus(),
-                event);
+                event.getId());
 
         addHistory(event, "Finished registration saga!");
 
         produceEvent(event, ETopics.REGISTRATION_COMPLETED);
+    }
+
+    public void continueSaga(EventDTO<?> event) {
+        ETopics topic = sagaExecutionController.getNextTopic(event);
+        log.info(
+                "CONTINUING SAGA FOR EVENT {}, GOING TO NEXT TOPIC {}",
+                event.getId(),
+                topic.getTopic());
+        sagaOrchestratorProducer.sendEvent(topic.getTopic(), jsonUtil.toJson(event));
     }
 }

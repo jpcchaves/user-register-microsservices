@@ -54,9 +54,7 @@ public class SagaOrchestratorConsumer {
     public void consumeOrchestratorEvent(String payload) {
 
         log.info("Receiving event {} from orchestrator topic", payload);
-
         EventDTO<?> event = jsonUtil.toEvent(payload);
-        // TODO: implement continue saga method
-        // orchestratorService.continueSaga(event);
+        orchestratorService.continueSaga(event);
     }
 }
