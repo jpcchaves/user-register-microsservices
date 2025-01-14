@@ -54,6 +54,7 @@ public class EmailService {
         event.setSource(CURRENT_SOURCE);
 
         addHistory(event, "Invalidated email request!");
+        addHistory(event, "Saga finished with failure!");
 
         producer.sendEvent(jsonUtil.toJson(event));
     }
@@ -73,18 +74,18 @@ public class EmailService {
     }
 
     private void handleFailure(EventDTO<?> event, String message) {
-        event.setStatus(ESagaStatus.FAIL);
+        event.setStatus(ESagaStatus.ROLLBACK_PENDING);
         event.setSource(CURRENT_SOURCE);
         addHistory(event, "Email service failed: " + message);
     }
 
     private void verifyDuplicateEvent(EventDTO<?> event) {
-        if (existsByIdAndTransactionId(event)) {
+        if (existsByTransactionId(event)) {
             throw new RuntimeException("There is already an event with this transaction id");
         }
     }
 
-    private boolean existsByIdAndTransactionId(EventDTO<?> event) {
+    private boolean existsByTransactionId(EventDTO<?> event) {
         return emailRequestsRepository.existsByTransactionId(event.getTransactionId());
     }
 
@@ -103,6 +104,7 @@ public class EmailService {
         event.setSource(CURRENT_SOURCE);
 
         addHistory(event, "Email sent successfully!");
+        addHistory(event, "Saga finished with success!");
     }
 
     private void addHistory(EventDTO<?> event, String message) {
