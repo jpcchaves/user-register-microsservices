@@ -30,6 +30,9 @@ public class EmailServiceConsumer {
         emailService.sendEmail(event);
     }
 
+    @KafkaListener(
+            groupId = "${spring.kafka.consumer.group-id}",
+            topics = {"${spring.kafka.topic.email-fail}"})
     public void consumeEmailFailureTopic(String payload) {
         log.info("Receiving event {} from email-failure topic", payload);
         EventDTO<?> event = jsonUtil.toEvent(payload);
