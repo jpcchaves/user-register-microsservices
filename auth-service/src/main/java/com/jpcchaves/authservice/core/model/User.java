@@ -62,7 +62,7 @@ public class User {
                         nullable = false,
                         referencedColumnName = "id",
                         foreignKey =
-                                @ForeignKey(name = "user_fk", value = ConstraintMode.CONSTRAINT))
+                                @ForeignKey(name = "role_fk", value = ConstraintMode.CONSTRAINT))
             })
     private Set<Role> roles = new HashSet<>();
 
