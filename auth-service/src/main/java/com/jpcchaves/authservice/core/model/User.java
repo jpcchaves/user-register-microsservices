@@ -14,6 +14,10 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -66,6 +70,14 @@ public class User {
             })
     private Set<Role> roles = new HashSet<>();
 
+    @CreationTimestamp
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
     public User() {}
 
     public User(
@@ -96,6 +108,8 @@ public class User {
         this.isEmailVerified = builder.isEmailVerified;
         this.phoneNumber = builder.phoneNumber;
         this.roles = builder.roles;
+        this.createdAt = builder.createdAt;
+        this.updatedAt = builder.updatedAt;
     }
 
     public static Builder builder() {
@@ -166,6 +180,22 @@ public class User {
         this.roles = roles;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -204,6 +234,8 @@ public class User {
         private Boolean isEmailVerified;
         private String phoneNumber;
         private Set<Role> roles = new HashSet<>();
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
 
         public Builder id(Long id) {
             this.id = id;
@@ -242,6 +274,16 @@ public class User {
 
         public Builder roles(Set<Role> roles) {
             this.roles = roles;
+            return this;
+        }
+
+        public Builder createdAt(LocalDateTime createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public Builder updatedAt(LocalDateTime updatedAt) {
+            this.updatedAt = updatedAt;
             return this;
         }
 
