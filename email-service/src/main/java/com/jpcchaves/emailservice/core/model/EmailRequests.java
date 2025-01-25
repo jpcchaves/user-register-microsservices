@@ -1,7 +1,11 @@
 package com.jpcchaves.emailservice.core.model;
 
+import com.jpcchaves.emailservice.core.enums.EEmailStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,7 +31,9 @@ public class EmailRequests implements Serializable {
     @Column(nullable = false)
     private String transactionId;
 
-    private Boolean success;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EEmailStatus status;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -42,12 +48,12 @@ public class EmailRequests implements Serializable {
     public EmailRequests(
             Long id,
             String transactionId,
-            Boolean success,
+            EEmailStatus status,
             LocalDateTime createdAt,
             LocalDateTime updatedAt) {
         this.id = id;
         this.transactionId = transactionId;
-        this.success = success;
+        this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -55,7 +61,7 @@ public class EmailRequests implements Serializable {
     public EmailRequests(Builder builder) {
         this.id = builder.id;
         this.transactionId = builder.transactionId;
-        this.success = builder.success;
+        this.status = builder.status;
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
     }
@@ -80,12 +86,12 @@ public class EmailRequests implements Serializable {
         this.transactionId = transactionId;
     }
 
-    public Boolean getSuccess() {
-        return success;
+    public EEmailStatus getStatus() {
+        return status;
     }
 
-    public void setSuccess(Boolean success) {
-        this.success = success;
+    public void setStatus(EEmailStatus status) {
+        this.status = status;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -107,7 +113,7 @@ public class EmailRequests implements Serializable {
     public static class Builder {
         private Long id;
         private String transactionId;
-        private Boolean success;
+        private EEmailStatus status;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
 
@@ -121,8 +127,8 @@ public class EmailRequests implements Serializable {
             return this;
         }
 
-        public Builder success(Boolean success) {
-            this.success = success;
+        public Builder status(EEmailStatus status) {
+            this.status = status;
             return this;
         }
 

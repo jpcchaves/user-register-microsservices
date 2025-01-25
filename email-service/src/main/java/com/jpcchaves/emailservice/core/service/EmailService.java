@@ -2,6 +2,7 @@ package com.jpcchaves.emailservice.core.service;
 
 import com.jpcchaves.emailservice.core.dto.EventDTO;
 import com.jpcchaves.emailservice.core.dto.HistoryDTO;
+import com.jpcchaves.emailservice.core.enums.EEmailStatus;
 import com.jpcchaves.emailservice.core.enums.ESagaStatus;
 import com.jpcchaves.emailservice.core.model.EmailRequests;
 import com.jpcchaves.emailservice.core.producer.KafkaProducer;
@@ -38,7 +39,7 @@ public class EmailService {
         try {
             log.info("Sending email. Event received: {}", event);
             verifyDuplicateEvent(event);
-            createEmailRequests(event, Boolean.TRUE);
+            createEmailRequests(event, EEmailStatus.SUCCESS);
             handleSuccess(event);
         } catch (Exception e) {
             log.error("Error sending email", e);
@@ -67,10 +68,10 @@ public class EmailService {
                 .findByTransactionId(event.getTransactionId())
                 .ifPresentOrElse(
                         emailRequest -> {
-                            emailRequest.setSuccess(Boolean.FALSE);
+                            emailRequest.setStatus(EEmailStatus.FAIL);
                             emailRequestsRepository.save(emailRequest);
                         },
-                        () -> createEmailRequests(event, Boolean.FALSE));
+                        () -> createEmailRequests(event, EEmailStatus.FAIL));
     }
 
     private void handleFailure(EventDTO<?> event, String message) {
@@ -89,11 +90,11 @@ public class EmailService {
         return emailRequestsRepository.existsByTransactionId(event.getTransactionId());
     }
 
-    private void createEmailRequests(EventDTO<?> event, boolean success) {
+    private void createEmailRequests(EventDTO<?> event, EEmailStatus status) {
         EmailRequests emailRequests =
                 EmailRequests.builder()
                         .transactionId(event.getTransactionId())
-                        .success(success)
+                        .status(status)
                         .build();
 
         emailRequestsRepository.save(emailRequests);
