@@ -9,6 +9,7 @@ spring:
     password: ${POSTGRES_PASSWORD:postgres}
     url: ${POSTGRES_URL:jdbc:postgresql://localhost:5434/email_db}
 
+
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -24,6 +25,18 @@ spring:
     consumer:
       group-id: email-service-group
       auto-offset-reset: latest
+
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_SERVER_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enabled: true
 
 logging:
   level:
