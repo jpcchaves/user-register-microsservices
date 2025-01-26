@@ -51,7 +51,7 @@ public class AuthService {
         user.setPassword(encodePassword(requestBody.getPassword()));
         userRepository.save(user);
 
-        sagaProducer.sendEvent(jsonUtil.toJson(createPayload()));
+        sagaProducer.sendEvent(jsonUtil.toJson(createPayload(user)));
 
         return UserResponseDTO.builder()
                 .id(Long.valueOf(UUID.randomUUID().toString()))
@@ -73,10 +73,10 @@ public class AuthService {
         }
     }
 
-    private Event createPayload() {
+    private Event createPayload(User user) {
         return Event.builder()
                 .transactionId(transactionHelper.generateTransactionId())
-                .payload("Teste")
+                .payload(jsonUtil.toJson(user))
                 .createdAt(LocalDateTime.now())
                 .build();
     }
