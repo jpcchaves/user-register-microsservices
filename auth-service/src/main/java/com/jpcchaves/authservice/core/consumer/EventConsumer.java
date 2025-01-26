@@ -1,6 +1,7 @@
 package com.jpcchaves.authservice.core.consumer;
 
 import com.jpcchaves.authservice.core.model.Event;
+import com.jpcchaves.authservice.core.service.AuthService;
 import com.jpcchaves.authservice.core.service.EventService;
 import com.jpcchaves.authservice.core.util.JsonUtil;
 
@@ -14,10 +15,12 @@ public class EventConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(EventConsumer.class);
     private final EventService eventService;
+    private final AuthService authService;
     private final JsonUtil jsonUtil;
 
-    public EventConsumer(EventService eventService, JsonUtil jsonUtil) {
+    public EventConsumer(EventService eventService, AuthService authService, JsonUtil jsonUtil) {
         this.eventService = eventService;
+        this.authService = authService;
         this.jsonUtil = jsonUtil;
     }
 
@@ -28,5 +31,6 @@ public class EventConsumer {
         log.info("Received registration completed topic: {}", payload);
         Event event = jsonUtil.toEvent(payload);
         eventService.endRegistrationSaga(event);
+        authService.handleEndRegistrationSaga(event);
     }
 }

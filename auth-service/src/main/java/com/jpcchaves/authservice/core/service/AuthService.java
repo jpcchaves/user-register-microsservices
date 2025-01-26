@@ -9,19 +9,18 @@ import com.jpcchaves.authservice.core.model.dto.UserResponseDTO;
 import com.jpcchaves.authservice.core.producer.SagaProducer;
 import com.jpcchaves.authservice.core.repository.RoleRepository;
 import com.jpcchaves.authservice.core.repository.UserRepository;
+import com.jpcchaves.authservice.core.strategy.ConcreteRegistrationStrategies;
+import com.jpcchaves.authservice.core.strategy.EndRegistrationSagaStrategy;
 import com.jpcchaves.authservice.core.util.JsonUtil;
 import com.jpcchaves.authservice.core.util.TransactionHelper;
 import com.jpcchaves.authservice.core.util.UserMapper;
-
+import java.time.LocalDateTime;
 import java.util.Set;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -33,19 +32,21 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final SagaProducer sagaProducer;
     private final TransactionHelper transactionHelper;
+    private final ConcreteRegistrationStrategies registrationStrategies;
 
     public AuthService(
             JsonUtil jsonUtil,
             UserMapper userMapper,
             UserRepository userRepository, RoleRepository roleRepository,
             SagaProducer sagaProducer,
-            TransactionHelper transactionHelper) {
+            TransactionHelper transactionHelper, ConcreteRegistrationStrategies registrationStrategies) {
         this.jsonUtil = jsonUtil;
         this.userMapper = userMapper;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.sagaProducer = sagaProducer;
         this.transactionHelper = transactionHelper;
+        this.registrationStrategies = registrationStrategies;
     }
 
     public UserResponseDTO register(UserRegisterDTO requestBody) {
@@ -91,5 +92,10 @@ public class AuthService {
         String TEST_ROLE = "TEST_ROLE";
         return roleRepository.findByName(TEST_ROLE)
                 .orElseGet(() -> roleRepository.save(new Role(TEST_ROLE)));
+    }
+
+    public void handleEndRegistrationSaga(Event event) {
+        EndRegistrationSagaStrategy strategy = registrationStrategies.getStrategy(event.getStatus());
+        strategy.handleEvent(event);
     }
 }
