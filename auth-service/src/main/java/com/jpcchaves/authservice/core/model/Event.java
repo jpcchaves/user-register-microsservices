@@ -159,6 +159,14 @@ public class Event {
         eventHistory.add(history);
     }
 
+    @Override
+    public String toString() {
+        return "Event{" +
+                "id=" + id +
+                ", transactionId='" + transactionId + '\'' +
+                '}';
+    }
+
     public static class Builder {
         private Long id;
         private String transactionId;
