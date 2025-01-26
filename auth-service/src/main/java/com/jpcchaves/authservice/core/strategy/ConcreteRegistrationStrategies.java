@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConcreteRegistrationStrategies {
 
-    public Map<ESagaStatus, EndRegistrationSagaStrategy> strategiesMap = new HashMap<>();
+    public Map<ESagaStatus, AbstractEndRegistrationSagaStrategy> strategiesMap = new HashMap<>();
 
-    public ConcreteRegistrationStrategies(List<EndRegistrationSagaStrategy> strategies) {
+    public ConcreteRegistrationStrategies(List<AbstractEndRegistrationSagaStrategy> strategies) {
         strategies.forEach(strategy -> strategiesMap.put(strategy.strategyName, strategy));
     }
 
-    public EndRegistrationSagaStrategy getStrategy(String endSagaStatus) {
+    public AbstractEndRegistrationSagaStrategy getStrategy(String endSagaStatus) {
         ESagaStatus esagaStatus = ESagaStatus.valueOf(endSagaStatus);
         return strategiesMap.get(esagaStatus);
     }

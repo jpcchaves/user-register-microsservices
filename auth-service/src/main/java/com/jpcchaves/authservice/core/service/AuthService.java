@@ -10,7 +10,7 @@ import com.jpcchaves.authservice.core.producer.SagaProducer;
 import com.jpcchaves.authservice.core.repository.RoleRepository;
 import com.jpcchaves.authservice.core.repository.UserRepository;
 import com.jpcchaves.authservice.core.strategy.ConcreteRegistrationStrategies;
-import com.jpcchaves.authservice.core.strategy.EndRegistrationSagaStrategy;
+import com.jpcchaves.authservice.core.strategy.AbstractEndRegistrationSagaStrategy;
 import com.jpcchaves.authservice.core.util.JsonUtil;
 import com.jpcchaves.authservice.core.util.TransactionHelper;
 import com.jpcchaves.authservice.core.util.UserMapper;
@@ -95,7 +95,7 @@ public class AuthService {
     }
 
     public void handleEndRegistrationSaga(Event event) {
-        EndRegistrationSagaStrategy strategy = registrationStrategies.getStrategy(event.getStatus());
+        AbstractEndRegistrationSagaStrategy strategy = registrationStrategies.getStrategy(event.getStatus());
         strategy.handleEvent(event);
     }
 }

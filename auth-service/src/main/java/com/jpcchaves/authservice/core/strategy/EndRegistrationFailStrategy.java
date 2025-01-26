@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EndRegistrationFailStrategy extends EndRegistrationSagaStrategy {
+public class EndRegistrationFailStrategy extends AbstractEndRegistrationSagaStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(EndRegistrationFailStrategy.class);
 
