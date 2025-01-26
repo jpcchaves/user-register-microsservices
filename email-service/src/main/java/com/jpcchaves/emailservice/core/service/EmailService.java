@@ -9,6 +9,7 @@ import com.jpcchaves.emailservice.core.producer.KafkaProducer;
 import com.jpcchaves.emailservice.core.repository.EmailRequestsRepository;
 import com.jpcchaves.emailservice.core.util.JsonUtil;
 
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -77,6 +78,7 @@ public class EmailService {
     private void handleFailure(EventDTO<?> event, String message) {
         event.setStatus(ESagaStatus.ROLLBACK_PENDING);
         event.setSource(CURRENT_SOURCE);
+        event.setFinishedAt(LocalDateTime.now());
         addHistory(event, "Email service failed: " + message);
     }
 
@@ -103,6 +105,7 @@ public class EmailService {
     private void handleSuccess(EventDTO<?> event) {
         event.setStatus(ESagaStatus.SUCCESS);
         event.setSource(CURRENT_SOURCE);
+        event.setFinishedAt(LocalDateTime.now());
 
         addHistory(event, "Email sent successfully!");
         addHistory(event, "Saga finished with success!");
