@@ -8,7 +8,7 @@ spring:
     url: ${POSTGRES_URL:jdbc:postgresql://localhost:5433/auth_db}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
