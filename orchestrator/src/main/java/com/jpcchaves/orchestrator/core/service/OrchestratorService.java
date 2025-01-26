@@ -65,19 +65,6 @@ public class OrchestratorService {
         sagaOrchestratorProducer.sendEvent(topic.getTopic(), jsonUtil.toJson(event));
     }
 
-    public void finishRegistrationSaga(EventDTO<?> event) {
-        event.setSource(EEventSource.ORCHESTRATOR);
-
-        log.info(
-                "FINISHED REGISTRATION SAGA WITH STATUS {} FOR EVENT: {}!",
-                event.getStatus(),
-                event.getId());
-
-        addHistory(event, "Finished registration saga!");
-
-        produceEvent(event, ETopics.REGISTRATION_COMPLETED);
-    }
-
     public void continueSaga(EventDTO<?> event) {
         ETopics topic = sagaExecutionController.getNextTopic(event);
         log.info(
