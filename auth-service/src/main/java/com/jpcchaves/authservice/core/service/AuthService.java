@@ -76,6 +76,7 @@ public class AuthService {
     private void validatePassword(UserRegisterDTO requestBody) {
         if (!ObjectUtils.nullSafeEquals(
                 requestBody.getPassword(), requestBody.getConfirmPassword())) {
+            log.error("Passwords do not match");
             throw new PasswordsMissmatchException("Passwords must match!");
         }
     }
