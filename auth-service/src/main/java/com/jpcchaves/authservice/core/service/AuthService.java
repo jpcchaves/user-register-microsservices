@@ -7,6 +7,7 @@ import com.jpcchaves.authservice.core.model.User;
 import com.jpcchaves.authservice.core.model.dto.UserRegisterDTO;
 import com.jpcchaves.authservice.core.model.dto.UserResponseDTO;
 import com.jpcchaves.authservice.core.producer.SagaProducer;
+import com.jpcchaves.authservice.core.repository.EventRepository;
 import com.jpcchaves.authservice.core.repository.RoleRepository;
 import com.jpcchaves.authservice.core.repository.UserRepository;
 import com.jpcchaves.authservice.core.strategy.AbstractEndRegistrationSagaStrategy;
@@ -32,6 +33,7 @@ public class AuthService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final EventRepository eventRepository;
     private final SagaProducer sagaProducer;
     private final TransactionHelper transactionHelper;
     private final ConcreteRegistrationStrategies registrationStrategies;
@@ -39,13 +41,17 @@ public class AuthService {
     public AuthService(
             JsonUtil jsonUtil,
             UserMapper userMapper,
-            UserRepository userRepository, RoleRepository roleRepository,
+            UserRepository userRepository,
+            RoleRepository roleRepository,
+            EventRepository eventRepository,
             SagaProducer sagaProducer,
-            TransactionHelper transactionHelper, ConcreteRegistrationStrategies registrationStrategies) {
+            TransactionHelper transactionHelper,
+            ConcreteRegistrationStrategies registrationStrategies) {
         this.jsonUtil = jsonUtil;
         this.userMapper = userMapper;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.eventRepository = eventRepository;
         this.sagaProducer = sagaProducer;
         this.transactionHelper = transactionHelper;
         this.registrationStrategies = registrationStrategies;
@@ -83,21 +89,24 @@ public class AuthService {
     }
 
     private Event createPayload(User user) {
-        return Event.builder()
-                .transactionId(transactionHelper.generateTransactionId())
-                .payload(jsonUtil.toJson(user))
-                .createdAt(LocalDateTime.now())
-                .build();
+        return eventRepository.save(
+                Event.builder()
+                        .transactionId(transactionHelper.generateTransactionId())
+                        .payload(jsonUtil.toJson(user))
+                        .createdAt(LocalDateTime.now())
+                        .build());
     }
 
     private Role getTestRole() {
         String TEST_ROLE = "TEST_ROLE";
-        return roleRepository.findByName(TEST_ROLE)
+        return roleRepository
+                .findByName(TEST_ROLE)
                 .orElseGet(() -> roleRepository.save(new Role(TEST_ROLE)));
     }
 
     public void handleEndRegistrationSaga(Event event) {
-        AbstractEndRegistrationSagaStrategy strategy = registrationStrategies.getStrategy(event.getStatus());
+        AbstractEndRegistrationSagaStrategy strategy =
+                registrationStrategies.getStrategy(event.getStatus());
         strategy.handleEvent(event);
     }
 }

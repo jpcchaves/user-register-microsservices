@@ -9,10 +9,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class EventDTO<T> {
 
-    private Long id;
+    private UUID id;
     private String transactionId;
     private T payload;
     private EEventSource source;
@@ -24,7 +25,7 @@ public class EventDTO<T> {
     public EventDTO() {}
 
     public EventDTO(
-            Long id,
+            UUID id,
             String transactionId,
             T payload,
             EEventSource source,
@@ -57,11 +58,11 @@ public class EventDTO<T> {
         return new Builder<>();
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -144,7 +145,7 @@ public class EventDTO<T> {
     }
 
     public static class Builder<T> {
-        private Long id;
+        private UUID id;
         private String transactionId;
         private T payload;
         private EEventSource source;
@@ -153,7 +154,7 @@ public class EventDTO<T> {
         private LocalDateTime createdAt;
         private LocalDateTime finishedAt;
 
-        public Builder<T> id(Long id) {
+        public Builder<T> id(UUID id) {
             this.id = id;
             return this;
         }

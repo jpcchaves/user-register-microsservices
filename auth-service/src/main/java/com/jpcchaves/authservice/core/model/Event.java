@@ -1,5 +1,6 @@
 package com.jpcchaves.authservice.core.model;
 
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
@@ -19,14 +20,15 @@ import org.springframework.util.ObjectUtils;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "events")
 public class Event {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false, updatable = false)
     private String transactionId;
@@ -54,7 +56,7 @@ public class Event {
     public Event() {}
 
     public Event(
-            Long id,
+            UUID id,
             String transactionId,
             String payload,
             String source,
@@ -87,11 +89,11 @@ public class Event {
         return new Builder();
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -161,14 +163,11 @@ public class Event {
 
     @Override
     public String toString() {
-        return "Event{" +
-                "id=" + id +
-                ", transactionId='" + transactionId + '\'' +
-                '}';
+        return "Event{" + "id=" + id + ", transactionId='" + transactionId + '\'' + '}';
     }
 
     public static class Builder {
-        private Long id;
+        private UUID id;
         private String transactionId;
         private String payload;
         private String source;
@@ -177,7 +176,7 @@ public class Event {
         private LocalDateTime createdAt;
         private LocalDateTime finishedAt;
 
-        public Builder id(Long id) {
+        public Builder id(UUID id) {
             this.id = id;
             return this;
         }

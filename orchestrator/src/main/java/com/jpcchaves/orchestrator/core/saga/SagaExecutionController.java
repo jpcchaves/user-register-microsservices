@@ -8,7 +8,6 @@ import static com.jpcchaves.orchestrator.core.saga.SagaHandler.SAGA_STATUS_INDEX
 import static com.jpcchaves.orchestrator.core.saga.SagaHandler.TOPIC_INDEX;
 
 import com.jpcchaves.orchestrator.core.dto.EventDTO;
-import com.jpcchaves.orchestrator.core.enums.EEventSource;
 import com.jpcchaves.orchestrator.core.enums.ETopics;
 import com.jpcchaves.orchestrator.core.exception.ValidationException;
 
@@ -27,6 +26,8 @@ public class SagaExecutionController {
     private static final String SAGA_LOG_ID = "TRANSACTION_ID: %s | EVENT_ID: %s";
     private static final String SUCCESS_LOG_MESSAGE =
             "### CURRENT SAGA: {} | SUCCESS | NEXT TOPIC: {} | {}";
+    private static final String ROLLBACK_LOG_MESSAGE =
+            "### CURRENT SAGA: {} | ROLLBACK COMPLETED | NEXT TOPIC: {} | {}";
     private static final String FAIL_LOG_MESSAGE =
             "### CURRENT SAGA: {} | FAIL SENDING TO ROLLBACK PREVIOUS SERVICE | NEXT TOPIC: {} | {}";
 
@@ -61,10 +62,11 @@ public class SagaExecutionController {
 
     private void logCurrentSaga(EventDTO<?> event, ETopics topic) {
         String sagaId = createSagaId(event);
-        EEventSource source = event.getSource();
+        String source = event.getSource().name();
 
         switch (event.getStatus()) {
             case SUCCESS -> log.info(SUCCESS_LOG_MESSAGE, source, topic, sagaId);
+            case ROLLBACK_PENDING -> log.info(ROLLBACK_LOG_MESSAGE, source, topic, sagaId);
             case FAIL -> log.info(FAIL_LOG_MESSAGE, source, topic, sagaId);
         }
     }
