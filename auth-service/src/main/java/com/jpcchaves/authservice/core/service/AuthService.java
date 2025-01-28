@@ -9,18 +9,20 @@ import com.jpcchaves.authservice.core.model.dto.UserResponseDTO;
 import com.jpcchaves.authservice.core.producer.SagaProducer;
 import com.jpcchaves.authservice.core.repository.RoleRepository;
 import com.jpcchaves.authservice.core.repository.UserRepository;
-import com.jpcchaves.authservice.core.strategy.ConcreteRegistrationStrategies;
 import com.jpcchaves.authservice.core.strategy.AbstractEndRegistrationSagaStrategy;
+import com.jpcchaves.authservice.core.strategy.ConcreteRegistrationStrategies;
 import com.jpcchaves.authservice.core.util.JsonUtil;
 import com.jpcchaves.authservice.core.util.TransactionHelper;
 import com.jpcchaves.authservice.core.util.UserMapper;
-import java.time.LocalDateTime;
-import java.util.Set;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+
+import java.time.LocalDateTime;
+import java.util.Set;
 
 @Service
 public class AuthService {
@@ -76,7 +78,6 @@ public class AuthService {
     private void validatePassword(UserRegisterDTO requestBody) {
         if (!ObjectUtils.nullSafeEquals(
                 requestBody.getPassword(), requestBody.getConfirmPassword())) {
-            log.error("Passwords do not match");
             throw new PasswordsMissmatchException("Passwords must match!");
         }
     }
