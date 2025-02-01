@@ -9,7 +9,6 @@ import com.jpcchaves.emailservice.core.producer.KafkaProducer;
 import com.jpcchaves.emailservice.core.repository.EmailRequestsRepository;
 import com.jpcchaves.emailservice.core.util.JsonUtil;
 
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -62,9 +61,6 @@ public class EmailService {
     }
 
     private void failEmailRequest(EventDTO<?> event) {
-        // set success to false
-        // if exists, modify the existing
-        // if it don't exist, create a new one setting the success as false
         emailRequestsRepository
                 .findByTransactionId(event.getTransactionId())
                 .ifPresentOrElse(
