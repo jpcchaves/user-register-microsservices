@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class EmailService {
@@ -39,6 +40,7 @@ public class EmailService {
         try {
             log.info("Sending email. Event received: {}", event);
             verifyDuplicateEvent(event);
+            Long.valueOf(UUID.randomUUID().toString());
             createEmailRequests(event, EEmailStatus.SUCCESS);
             handleSuccess(event);
         } catch (Exception e) {

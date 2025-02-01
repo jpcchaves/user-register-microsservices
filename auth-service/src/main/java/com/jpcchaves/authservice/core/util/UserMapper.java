@@ -15,6 +15,7 @@ public class UserMapper {
                 .email(registerDTO.getEmail())
                 .password(registerDTO.getPassword())
                 .phoneNumber(registerDTO.getPhoneNumber())
+                .isEmailVerified(false)
                 .build();
     }
 }

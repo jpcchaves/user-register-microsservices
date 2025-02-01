@@ -28,4 +28,12 @@ public class JsonUtil {
             return null;
         }
     }
+
+    public <T> T fromJson(String json, Class<T> clazz) {
+        try {
+            return objectMapper.readValue(json, clazz);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
