@@ -33,9 +33,9 @@ public class JsonUtil {
         }
     }
 
-    public UserDTO toUser(String json) {
+    public <T> UserDTO toUser(T json) {
         try {
-            return objectMapper.readValue(json, UserDTO.class);
+            return objectMapper.readValue((String) json, UserDTO.class);
         } catch (Exception e) {
             return null;
         }
