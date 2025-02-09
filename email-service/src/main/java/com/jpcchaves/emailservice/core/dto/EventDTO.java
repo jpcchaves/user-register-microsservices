@@ -128,6 +128,22 @@ public class EventDTO<T> {
         eventHistory.add(history);
     }
 
+    @Override
+    public String toString() {
+        return "EventDTO{"
+                + "id="
+                + id
+                + ", transactionId='"
+                + transactionId
+                + '\''
+                + ", payload="
+                + payload
+                + ", source='"
+                + source
+                + '\''
+                + '}';
+    }
+
     public static class Builder<T> {
         private UUID id;
         private String transactionId;
