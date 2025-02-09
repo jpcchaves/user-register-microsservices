@@ -2,6 +2,7 @@ package com.jpcchaves.emailservice.core.service;
 
 import com.jpcchaves.emailservice.core.dto.EventDTO;
 import com.jpcchaves.emailservice.core.dto.HistoryDTO;
+import com.jpcchaves.emailservice.core.dto.UserDTO;
 import com.jpcchaves.emailservice.core.enums.EEmailStatus;
 import com.jpcchaves.emailservice.core.enums.ESagaStatus;
 import com.jpcchaves.emailservice.core.model.EmailRequests;
@@ -9,12 +10,17 @@ import com.jpcchaves.emailservice.core.producer.KafkaProducer;
 import com.jpcchaves.emailservice.core.repository.EmailRequestsRepository;
 import com.jpcchaves.emailservice.core.util.JsonUtil;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 public class EmailService {
@@ -26,22 +32,28 @@ public class EmailService {
     private final EmailRequestsRepository emailRequestsRepository;
     private final KafkaProducer producer;
     private final JsonUtil jsonUtil;
+    private final JavaMailSender mailSender;
+
+    @Value("${spring.mail.username}")
+    private String from;
 
     public EmailService(
             EmailRequestsRepository emailRequestsRepository,
             KafkaProducer producer,
-            JsonUtil jsonUtil) {
+            JsonUtil jsonUtil,
+            JavaMailSender mailSender) {
         this.emailRequestsRepository = emailRequestsRepository;
         this.producer = producer;
         this.jsonUtil = jsonUtil;
+        this.mailSender = mailSender;
     }
 
     public void sendEmail(EventDTO<?> event) {
         try {
             log.info("Sending email. Event received: {}", event);
             verifyDuplicateEvent(event);
-            Long.valueOf(UUID.randomUUID().toString());
             createEmailRequests(event, EEmailStatus.SUCCESS);
+            sendRegistrationEmail(extractUserFromEvent(event));
             handleSuccess(event);
         } catch (Exception e) {
             log.error("Error sending email", e);
@@ -119,5 +131,48 @@ public class EmailService {
                         .build();
 
         event.addToHistory(history);
+    }
+
+    private UserDTO extractUserFromEvent(EventDTO<?> event) {
+        return jsonUtil.toUser(event.getPayload());
+    }
+
+    private void sendRegistrationEmail(UserDTO user) throws MessagingException {
+        mailSender.send(mountEmail(user.getEmail(), user.getFirstName()));
+    }
+
+    private MimeMessage mountEmail(String recipientEmail, String recipientName)
+            throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+
+        helper.setFrom(from);
+        helper.setTo(recipientEmail);
+        helper.setSubject("Boas vindas ao nosso sistema, %s!".formatted(recipientName));
+        helper.setText(getRegistrationEmailBody(recipientName), true);
+
+        return mimeMessage;
+    }
+
+    private String getRegistrationEmailBody(String recipientName) {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("<h1>");
+        builder.append("Bem vindo ao nosso sistema, ");
+        builder.append(recipientName);
+        builder.append("</h1>");
+
+        builder.append("</br>");
+
+        builder.append("<p>");
+        builder.append("Estamos felizes em ter você conosco!");
+        builder.append("</p>");
+
+        builder.append("<p>");
+        builder.append(
+                "Caso tenha recebido esse email, significa que seu cadastro foi realizado com sucesso e você já pode desfrutar da nossa plataforma!");
+        builder.append("</p>");
+
+        return builder.toString();
     }
 }
