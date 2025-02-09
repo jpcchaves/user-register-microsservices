@@ -2,6 +2,7 @@ package com.jpcchaves.emailservice.core.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jpcchaves.emailservice.core.dto.EventDTO;
+import com.jpcchaves.emailservice.core.dto.UserDTO;
 
 import org.springframework.stereotype.Component;
 
@@ -26,10 +27,16 @@ public class JsonUtil {
 
     public EventDTO<?> toEvent(String json) {
         try {
-
             return objectMapper.readValue(json, EventDTO.class);
         } catch (Exception e) {
+            return null;
+        }
+    }
 
+    public UserDTO toUser(String json) {
+        try {
+            return objectMapper.readValue(json, UserDTO.class);
+        } catch (Exception e) {
             return null;
         }
     }
