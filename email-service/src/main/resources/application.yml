@@ -35,8 +35,11 @@ spring:
       mail:
         smtp:
           auth: true
-          starttls:
-            enabled: true
+          socketFactory:
+            port: 465
+            class: javax.net.ssl.SSLSocketFactory
+        starttls:
+          enable: true
 
 logging:
   level:
